@@ -57,91 +57,101 @@ class reactor:
         This function computes the ignition delay from the occurence of the
         peak in species' concentration.
         """
+        # Tic
+        t0 = time.time()
+
+        # This is a starting estimate. If you do not get an ignition within this time, increase it
+        estimated_ignition_delay_time = 100
+        t = 0
+
+        counter = 1
+        while t < estimated_ignition_delay_time:
+            t = self.reactor_network.step()
+            if not counter % 10:
+                # We will save only every 10th value. Otherwise, this takes too long
+                # Note that the species concentrations are mass fractions
+                self.time_history.append(self.r.thermo.state, t=t)
+            counter += 1
+
+        # We will use the 'oh' species to compute the ignition delay
         i_ign = self.time_history(species).Y.argmax()
-        return self.time_history.t[i_ign]
+        self.tau = self.time_history.t[i_ign]
+
+        # Toc
+        t1 = time.time()
+
+        # print(f"Computed Ignition Delay: {self.tau:.3e} seconds. Took {t1-t0:3.2f}s to compute")
+        
+        return self.tau, t1-t0
         
     
+    def print_species_evolution(self, species):
+        
+        if hasattr(self, 'tau'):
+            plt.figure()
+            plt.plot(self.time_history.t, self.time_history(reference_species).Y)
+            plt.xlabel("Time (s)")
+            plt.ylabel("$Y_{OH}$")
+
+            plt.xlim([0, 0.01])
+            plt.arrow(
+                0,
+                0.008,
+                self.tau,
+                0,
+                width=0.0001,
+                head_width=0.0005,
+                head_length=0.001,
+                length_includes_head=True,
+                color="r",
+                shape="full",
+            )
+            plt.grid()
+            plt.annotate('Ignition Delay: ' + str(round(self.tau,6)) + ' seconds', 
+            xy=(0.007, 0.008), size=10, color = 'k',
+            ha='center', va="center")
+
+
+        
+        else:
+            self.ignition_delay(species)
+            plt.figure()
+            plt.plot(self.time_history.t, self.time_history(reference_species).Y)
+            plt.xlabel("Time (s)")
+            plt.ylabel("$Y_{OH}$")
+           
+            plt.xlim([0, 0.01])
+            plt.arrow(
+                0,
+                0.008,
+                self.tau,
+                0,
+                width=0.0001,
+                head_width=0.0005,
+                head_length=0.001,
+                length_includes_head=True,
+                color="r",
+                shape="full",
+            )
+            plt.grid()
+            plt.annotate('Ignition Delay: ' + str(round(self.tau,6)) + ' seconds', 
+            xy=(0.007, 0.008), size=10, color = 'k',
+            ha='center', va="center")
+            
 
 
 #%%
-# Define the reactor temperature and pressure
-# reactor_temperature = 1000  # Kelvin
-# reactor_pressure = 101325*10  # Pascals
-
-# gas.TP = reactor_temperature, reactor_pressure
-
-# Define the fuel, oxidizer and set the stoichiometry
-
-# Create a batch reactor object and add it to a reactor network
-# In this example, the batch reactor will be the only reactor
-# in the network
-# r = ct.IdealGasReactor(contents=gas, name="Batch Reactor")
-# reactor_network = ct.ReactorNet([r])
-
-# # use the above list to create a DataFrame
-# time_history = ct.SolutionArray(gas, extra="t")
-test = reactor(mechanism = 'Nissan_chem.yaml')
-test.init_batch(name1="Batch Reactor")
-#%%
-# def ignition_delay(states, species):
-#     """
-#     This function computes the ignition delay from the occurence of the
-#     peak in species' concentration.
-#     """
-#     i_ign = states(species).Y.argmax()
-#     return states.t[i_ign]
+# Initialize a constant volume reactor
+cv_react = reactor(mechanism = 'Nissan_chem.yaml')
+# Initialize a batch of constant volume reactors
+cv_react.init_batch(name1="Batch Reactor")
 #%%
 reference_species = "oh"
 
-# Tic
-t0 = time.time()
+# tau, t_compute = cv_react.ignition_delay(reference_species)
 
-# This is a starting estimate. If you do not get an ignition within this time, increase it
-estimated_ignition_delay_time = 0.1
-t = 0
-
-counter = 1
-while t < estimated_ignition_delay_time:
-    t = test.reactor_network.step()
-    if not counter % 10:
-        # We will save only every 10th value. Otherwise, this takes too long
-        # Note that the species concentrations are mass fractions
-        test.time_history.append(test.r.thermo.state, t=t)
-    counter += 1
-
-# We will use the 'oh' species to compute the ignition delay
-tau = test.ignition_delay(reference_species)
-
-# Toc
-t1 = time.time()
-
-print(f"Computed Ignition Delay: {tau:.3e} seconds. Took {t1-t0:3.2f}s to compute")
-
-# If you want to save all the data - molefractions, temperature, pressure, etc
-# uncomment the next line
-# time_history.to_csv("time_history.csv")
 #%%
-# plt.figure()
-plt.plot(test.time_history.t, test.time_history(reference_species).Y)
-plt.xlabel("Time (s)")
-plt.ylabel("$Y_{OH}$")
-
-plt.xlim([0, 0.01])
-plt.arrow(
-    0,
-    0.008,
-    tau,
-    0,
-    width=0.0001,
-    head_width=0.0005,
-    head_length=0.001,
-    length_includes_head=True,
-    color="r",
-    shape="full",
-)
-# plt.annotate(
-#     r"$Ignition Delay: \tau_{ign}$", xy=(0, 0), xytext=(0.01, 0.0082), fontsize=16
-# );
+cv_react.print_species_evolution(reference_species)
 
 #%%
 # # Make a list of all the temperatures we would like to run simulations at
