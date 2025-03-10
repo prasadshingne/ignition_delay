@@ -72,7 +72,15 @@ plt.show()
 
 ### Engine Cycle Simulation Example
 
-image.png
+# The simulation will generate a plot showing:
+# - Pressure vs. time during the complete cycle
+# - Temperature vs. time during the complete cycle
+# - Volume vs. time during the complete cycle
+# - Ignition point marked on the plots
+# - Example filename: 'engine_cycle_bdc_to_bdc.png'
+```
+
+![Engine Cycle Simulation](Screenshot from 2025-03-09 22-48-08.png)
 
 ## Contributing
 
