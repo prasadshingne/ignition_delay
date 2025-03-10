@@ -8,6 +8,7 @@ This repository contains a Python-based tool for calculating ignition delays of 
 - Support for various chemical mechanisms (e.g., GRI-Mech 3.0, custom mechanisms)
 - Temperature and pressure sweep capabilities
 - Visualization of species evolution and ignition delay trends
+- Engine cycle simulation with piston motion
 - Easy-to-use Python interface
 
 ## Installation
@@ -69,6 +70,24 @@ plt.grid(True)
 plt.show()
 ```
 
+### Engine Cycle Simulation Example
+
+```python
+from engine_cycle import simulate_cycle
+
+# Simulate a complete engine cycle
+# Parameters:
+# - compression_ratio: V_max/V_min
+# - V_min: Minimum volume at TDC (m^3)
+# - rpm: Engine speed (rev/min)
+# - Initial conditions: temperature, pressure, and composition
+
+# The simulation will generate plots showing:
+# - Pressure vs. time
+# - Temperature vs. time
+# - Volume vs. time
+```
+
 ## Figures to Generate
 
 1. **Species Evolution Plot**
@@ -91,6 +110,12 @@ plt.show()
    - Ignition delay vs equivalence ratio
    - Multiple temperatures
    - Example filename: `phi_dependence.png`
+
+5. **Engine Cycle Analysis**
+   - Pressure vs. time during the cycle
+   - Temperature vs. time during the cycle
+   - Volume vs. time during the cycle
+   - Example filename: `engine_cycle.png`
 
 ## Contributing
 
