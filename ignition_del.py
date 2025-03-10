@@ -148,68 +148,69 @@ cv_react.init_batch(name1="Batch Reactor")
 #%%
 reference_species = "oh"
 
-# tau, t_compute = cv_react.ignition_delay(reference_species)
+tau, t_compute = cv_react.ignition_delay(reference_species)
 
 #%%
 cv_react.print_species_evolution(reference_species)
 
 #%%
 # # Make a list of all the temperatures we would like to run simulations at
-# T = np.hstack((np.arange(1300, 900, -100), np.arange(975, 475, -25)))
+T = np.hstack((np.arange(2000, 900, -100), np.arange(975, 475, -25)))
 
-# estimated_ignition_delay_times = np.ones_like(T, dtype=float)
+estimated_ignition_delay_times = 10000000000* np.ones_like(T, dtype=float)
 
-# # Make time adjustments for the highest and lowest temperatures. This we do empirically
-# estimated_ignition_delay_times[:6] = 6 * [0.1]
-# estimated_ignition_delay_times[-4:-2] = 10
-# estimated_ignition_delay_times[-2:] = 100
+# Make time adjustments for the highest and lowest temperatures. This we do empirically
+# estimated_ignition_delay_times[:4] = 4 * [10]
+# estimated_ignition_delay_times[5:10] = 5 * [100]
+# estimated_ignition_delay_times[11:] = 10000000000
 
-# # Now create a SolutionArray out of these
-# ignition_delays = ct.SolutionArray(
-#     gas, shape=T.shape, extra={"tau": estimated_ignition_delay_times}
-# )
-# ignition_delays.set_equivalence_ratio(
-#     0.6, fuel="C7H16", oxidizer={"O2": 1.0, "N2": 3.76}
-# )
-# ignition_delays.TP = T, reactor_pressure
-# #%%
-# tau = np.zeros([len(T),1], dtype=float)
-# for i, state in enumerate(ignition_delays):
-#     # Setup the gas and reactor
-#     gas.TPX = state.TPX
-#     r = ct.IdealGasReactor(contents=gas, name="Batch Reactor")
-#     reactor_network = ct.ReactorNet([r])
+# Now create a SolutionArray out of these
+ignition_delays = ct.SolutionArray(
+    cv_react.gas, shape=T.shape, extra={"tau": estimated_ignition_delay_times}
+)
+ignition_delays.set_equivalence_ratio(
+    1, fuel="C8H18", oxidizer={"O2": 1.0, "N2": 3.76}
+)
+reactor_pressure = 20 * 10^5
+ignition_delays.TP = T, reactor_pressure
+#%%
+tau = np.zeros([len(T),1], dtype=float)
+for i, state in enumerate(ignition_delays):
+    # Setup the gas and reactor
+    cv_react.gas.TPX = state.TPX
+    r = ct.IdealGasReactor(contents=cv_react.gas, name="Batch Reactor")
+    reactor_network = ct.ReactorNet([r])
 
-#     reference_species_history = []
-#     time_history = []
+    reference_species_history = []
+    time_history = []
 
-#     t0 = time.time()
+    t0 = time.time()
 
-#     t = 0
-#     while t < estimated_ignition_delay_times[i]:
-#         t = reactor_network.step()
-#         time_history.append(t)
-#         reference_species_history.append(gas[reference_species].X[0])
+    t = 0
+    while t < estimated_ignition_delay_times[i]:
+        t = reactor_network.step()
+        time_history.append(t)
+        reference_species_history.append(cv_react.gas[reference_species].X[0])
 
-#     i_ign = np.array(reference_species_history).argmax()
-#     tau[i,0] = time_history[i_ign]
-#     t1 = time.time()
+    i_ign = np.array(reference_species_history).argmax()
+    tau[i,0] = time_history[i_ign]
+    t1 = time.time()
 
-#     # print(
-#     #     f"Computed Ignition Delay: {tau:.3e} seconds for T={state.T}K. Took {t1 - t0:3.2f}s to compute"
-#     # )
+    # print(
+    #     f"Computed Ignition Delay: {tau:.3e} seconds for T={state.T}K. Took {t1 - t0:3.2f}s to compute"
+    # )
     
 #%%
-# fig = plt.figure()
-# ax = fig.add_subplot(111)
-# ax.semilogy(1000 / ignition_delays.T, tau, "o-")
-# ax.set_ylabel("Ignition Delay (s)")
-# ax.set_xlabel(r"$\frac{1000}{T (K)}$", fontsize=18)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.semilogy(1000 / ignition_delays.T, tau, "o-")
+ax.set_ylabel("Ignition Delay (s)")
+ax.set_xlabel(r"$\frac{1000}{T (K)}$", fontsize=18)
 
-# # Add a second axis on top to plot the temperature for better readability
-# ax2 = ax.twiny()
-# ticks = ax.get_xticks()
-# ax2.set_xticks(ticks)
-# ax2.set_xticklabels((1000 / ticks).round(1))
-# ax2.set_xlim(ax.get_xlim())
-# ax2.set_xlabel("Temperature: $T(K)$");
+# Add a second axis on top to plot the temperature for better readability
+ax2 = ax.twiny()
+ticks = ax.get_xticks()
+ax2.set_xticks(ticks)
+ax2.set_xticklabels((1000 / ticks).round(1))
+ax2.set_xlim(ax.get_xlim())
+ax2.set_xlabel("Temperature: $T(K)$");
