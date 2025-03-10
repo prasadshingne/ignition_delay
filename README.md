@@ -79,8 +79,7 @@ plt.show()
 # - Ignition point marked on the plots
 # - Example filename: 'engine_cycle_bdc_to_bdc.png'
 ```
-
-![Engine Cycle Simulation](Screenshot from 2025-03-09 22-48-08.png)
+![Screenshot from 2025-03-09 22-48-08](https://github.com/user-attachments/assets/b23900b5-83fc-45b2-8d10-a6ca525faf5e)
 
 ## Contributing
 
