@@ -72,50 +72,7 @@ plt.show()
 
 ### Engine Cycle Simulation Example
 
-```python
-from engine_cycle import simulate_cycle
 
-# Simulate a complete engine cycle
-# Parameters:
-# - compression_ratio: V_max/V_min
-# - V_min: Minimum volume at TDC (m^3)
-# - rpm: Engine speed (rev/min)
-# - Initial conditions: temperature, pressure, and composition
-
-# The simulation will generate plots showing:
-# - Pressure vs. time
-# - Temperature vs. time
-# - Volume vs. time
-```
-
-## Figures to Generate
-
-1. **Species Evolution Plot**
-   - Time evolution of OH radical concentration
-   - Marked ignition delay point
-   - Temperature and pressure conditions in title
-   - Example filename: `species_evolution.png`
-
-2. **Ignition Delay vs Temperature**
-   - Arrhenius plot (1000/T vs log(τ))
-   - Multiple equivalence ratios
-   - Example filename: `ignition_delay_arrhenius.png`
-
-3. **Pressure Dependence**
-   - Ignition delay vs pressure at constant temperature
-   - Multiple temperatures
-   - Example filename: `pressure_dependence.png`
-
-4. **Equivalence Ratio Effect**
-   - Ignition delay vs equivalence ratio
-   - Multiple temperatures
-   - Example filename: `phi_dependence.png`
-
-5. **Engine Cycle Analysis**
-   - Pressure vs. time during the cycle
-   - Temperature vs. time during the cycle
-   - Volume vs. time during the cycle
-   - Example filename: `engine_cycle.png`
 
 ## Contributing
 
