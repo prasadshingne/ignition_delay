@@ -71,7 +71,7 @@ plt.show()
 ```
 
 ### Engine Cycle Simulation Example
-
+```
 # The simulation will generate a plot showing:
 # - Pressure vs. time during the complete cycle
 # - Temperature vs. time during the complete cycle
